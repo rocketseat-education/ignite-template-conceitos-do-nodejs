@@ -11,7 +11,8 @@ const users = [];
 
 function checksExistsUserAccount(request, response, next) {
   // Complete aqui
-  const { username } = request.aderhe
+  const { username } = request.header;
+  
 }
 
 app.get("/", (request, response) =>{
