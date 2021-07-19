@@ -14,11 +14,11 @@ function checksExistsUserAccount(request, response, next) {
   const { username } = request.header;
   const user = users.find((user) => user.username === username );
   if(!user){
-        return response.status(400).json(
+        return response.status(404).json(
             { error: "Username not found" }) ;
   } 
   request.user = user
-  next();
+  return next();
 }
 
 app.get("/", (request, response) =>{
@@ -31,7 +31,7 @@ app.post('/users', (request, response) => {
   const userAlreadyExists = users.some(
       (user) => user.username === username
   );
-  if(usernameAlreadyExists){
+  if(userAlreadyExists){
       return response.status(400).json({ error: "Username already exists" }) 
   }
   const user = {
@@ -46,36 +46,64 @@ app.post('/users', (request, response) => {
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   // Complete aqui
-  const { username } = request.headers;
-  return response.status(200).json(username.todos)
+  const { user } = request;
+  return response.status(200).json(user.todos)
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
   // Complete aqui
-  const {title, deadline} = req.body;
+  const {title, deadline} = request.body;
   const {user}  = request;
-  const todosOperation = {
-      id: uuidv4, 
+  const todo = {
+      id: uuidv4(), 
       title,
       done: false, 
-      deadline,
+      deadline:new Date(deadline),
       created_at: new Date()
   }
+  user.todos.push(todo);
+  return  response.status(201).json(todo)
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   // Complete aqui
+  const {title, deadline} = request;
+  const {user}  = request.body;
+  const {id}  = request.params;
+
+  const todo = user.todos.find(todo => todo.id  ===  id);
+  if(!todo){
+      return response.status(404).json({ error: "Todo not exists" }) 
+  }
+  todo.title == title;
+  todo.deadline = new Date(deadline);
+  return  response.json(todo)
+
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   // Complete aqui
+  const {user}  = request.body;
+  const {id}  = request.params;
+  
+  const todo = user.todos.find(todo => todo.id  ===  id);
+  if(!todo){
+      return response.status(404).json({ error: "Todo not exists" }) 
+  }
+  todo.done = true;
+  return response.json(todo); 
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   // Complete aqui
   const { user } = request;
-  user.splice(user, 1)
-  return response.status(204).json(users)
+  const { id } = requestparams;
+  const todoIndex = user.todos.findIndex(todo => todo.id  ===  id);
+  if(!todoIndex === -1){
+      return response.status(404).json({ error: "Todo not exists" }) 
+  }
+  user.todo.splice(todoIndex, 1);
+  return response.status(204).json(user)
 
 });
 
