@@ -21,9 +21,6 @@ function checksExistsUserAccount(request, response, next) {
 
 const users = [];
 
-app.get("/", (request, response) =>{
-  response.json("Todo List").status(200);
-});
 
 app.post('/users', (request, response) => {
   // Complete aqui
