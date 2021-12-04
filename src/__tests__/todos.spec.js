@@ -87,6 +87,20 @@ describe('Todos', () => {
       })
       .set('username', userResponse.body.username);
 
+    const getAllTodosResponse = await request(app)
+      .get((`/todos/`))
+      .set('username', userResponse.body.username);
+    
+    expect(
+      getAllTodosResponse.body.find(
+        (todo)=>todo.id === todoResponse.body.id
+      ))
+    .toMatchObject({
+      title: 'update title',
+      deadline: todoDate.toISOString(),
+      done: false
+    });
+
     expect(response.body).toMatchObject({
       title: 'update title',
       deadline: todoDate.toISOString(),
