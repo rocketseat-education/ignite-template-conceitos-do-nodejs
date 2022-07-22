@@ -58,7 +58,21 @@ app.get("/todos", checksExistsUserAccount, (request, response) => {
 });
 
 app.post("/todos", checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const {user} = request;
+  const {title,deadline} = request.body;
+  
+  // crio object para ser anexado no object pertecente ao user 
+  const todosOperation = {
+    id: uuidv4,
+    title,
+    done: false,
+    deadline: new Date(deadline),
+    created_at: new Date()
+  };
+
+  user.todos.push(todosOperation);
+  return response.status(201).send();
+  
 });
 
 app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
